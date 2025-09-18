@@ -1,14 +1,16 @@
+import { ChartColumnBigIcon } from "lucide-react";
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Poppins } from "next/font/google";
+import Link from "next/link";
 import "./globals.css";
+import { ClerkProvider, SignedIn, SignedOut, SignInButton, SignUpButton } from "@clerk/nextjs";
+import { Button } from "@/components/ui/button";
+import UserDropdown from "./user-dropdown";
+import { Toaster } from "sonner";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const poppins = Poppins({
+  weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
+  variable: "--font-poppins",
   subsets: ["latin"],
 });
 
@@ -23,12 +25,35 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        {children}
-      </body>
-    </html>
+    <ClerkProvider>
+      <html lang="en">
+        <body
+          className={`${poppins.variable} antialiased`}
+        >
+          <nav className="bg-primary p-4 text-white h-20 flex items-center justify-between">
+            <Link href="/" className="font-bold text-2xl flex gap-1 items-center">
+              <ChartColumnBigIcon className="text-lime-500" /> NextCash
+            </Link>
+            <div>
+              <SignedOut>
+                <div className="flex items-center">
+                  <Button asChild variant="link" className="text-white">
+                    <SignInButton />
+                  </Button>
+                  <Button asChild variant="link" className="text-white">
+                    <SignUpButton />
+                  </Button>
+                </div>
+              </SignedOut>
+              <SignedIn>
+                <UserDropdown></UserDropdown>
+              </SignedIn>
+            </div>
+          </nav>
+          {children}
+          <Toaster richColors />
+        </body>
+      </html>
+    </ClerkProvider>
   );
 }
